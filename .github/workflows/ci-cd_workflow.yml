@@ -85,8 +85,7 @@ jobs:  # Définition des différents jobs du workflow
             docker stop backend-app postgres || true
             docker rm backend-app postgres || true
             docker run -d -p 5000:5000 --name backend-app ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
-            docker run -d --name postgres -e POSTGRES_USER=mahjouba -e POSTGRES_PASSWORD=mahjouba -e POSTGRES_DB=database -e PGDATA=/var/lib/postgresql/data -v ~/data:/var/lib/postgresql/data -p 5432:5432 postgres:16
-
+            docker run -d --name postgres -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} -e PGDATA=/var/lib/postgresql/data -v ~/data:/var/lib/postgresql/data -p 5432:5432 postgres:16
           EOF
         shell: bash
         env:
