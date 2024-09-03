@@ -39,14 +39,6 @@ jobs:  # Définition des différents jobs du workflow
 
     needs: test  # Ce job est dépendant du job de test, il ne s'exécute que si le job de test réussit
 
-    env:
-      DB_USER: ${{ secrets.DB_USER }}
-      DB_HOST: ${{ secrets.DB_HOST }}
-      DB_NAME: ${{ secrets.DB_NAME }}
-      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      DB_PORT: ${{ secrets.DB_PORT }}
-      PORT: ${{ secrets.PORT }}
-
     permissions: # Définit les permissions accordées au GITHUB_TOKEN pour les actions dans ce job.
       contents: read # Ces permissions contrôlent ce que le GITHUB_TOKEN peut faire dans ce job spécifique,
       packages: write # limitant ou autorisant des actions telles que la lecture du dépôt, la publication de packages,
