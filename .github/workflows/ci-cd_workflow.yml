@@ -11,12 +11,6 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   TAG_NAME: 0.1
-  DB_USER: ${{ secrets.DB_USER }}
-  DB_HOST: ${{ secrets.DB_HOST }}
-  DB_NAME: ${{ secrets.DB_NAME }}
-  DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-  DB_PORT: ${{ secrets.DB_PORT }}
-  PORT: ${{ secrets.PORT }}
   
 jobs:  # Définition des différents jobs du workflow
 
@@ -44,7 +38,15 @@ jobs:  # Définition des différents jobs du workflow
     runs-on: self-hosted # Utilisation d'un runner personnalisé pour ce job. Ce runner est une machine virtuelle (VM) configurée avec Debian 12.
 
     needs: test  # Ce job est dépendant du job de test, il ne s'exécute que si le job de test réussit
-    
+
+    env:
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      PORT: ${{ secrets.PORT }}
+
     permissions: # Définit les permissions accordées au GITHUB_TOKEN pour les actions dans ce job.
       contents: read # Ces permissions contrôlent ce que le GITHUB_TOKEN peut faire dans ce job spécifique,
       packages: write # limitant ou autorisant des actions telles que la lecture du dépôt, la publication de packages,
