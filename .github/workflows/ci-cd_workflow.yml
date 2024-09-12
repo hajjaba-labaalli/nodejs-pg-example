@@ -56,6 +56,12 @@ jobs:  # Définition des différents jobs du workflow
       - name: Build Docker image  # Construction de l'image Docker
         run: |
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }} .
+        env:
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_PORT: ${{ secrets.DB_PORT }}
+          PORT: ${{ secrets.PORT }}
 
       - name: Push Docker image  # Pousser l'image Docker vers GitHub Container Registry
         run: |
