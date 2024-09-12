@@ -81,9 +81,10 @@ jobs:  # Définition des différents jobs du workflow
           ssh -o StrictHostKeyChecking=no "$REMOTE_USER"@"$REMOTE_HOST" <<EOF
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
             mkdir -p ~/data
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
             docker stop backend-app postgres || true
             docker rm backend-app postgres || true
+            docker rmi ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
             docker run -d -p 5000:5000 --name backend-app ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
             docker run -d --name postgres \
               -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
