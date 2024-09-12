@@ -99,7 +99,10 @@ jobs:  # Définition des différents jobs du workflow
               -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
               -v ~/data:/var/lib/postgresql/data \
               -p 5432:5432 \
-              postgis/postgis:16-3.1-alpine
+              postgres:16 \
+              bash -c "apt-get update && \
+                       apt-get install -y postgresql-16-postgis-3 postgresql-16-postgis-3-scripts && \
+                       docker-entrypoint.sh postgres"
           EOF
         shell: bash
         env:
