@@ -3,10 +3,11 @@ name: CI/CD Workflow  # Nom du workflow CI/CD
 on:  # Définition des événements qui déclenchent l'exécution du workflow CI/CD
   push:  # Déclenchement lors d'un push
     branches:
-      - main  # Le workflow s'exécute uniquement pour les pushs sur la branche master
+      - main  # Le workflow s'exécute uniquement pour les pushs sur la branche main
   pull_request:  # Déclenchement lors de la création ou mise à jour d'une pull request
     branches:
-      - main  # Le workflow s'exécute uniquement pour les pull requests vers la branche master
+      - main  # Le workflow s'exécute uniquement pour les pull requests vers la branche main
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -19,18 +20,18 @@ jobs:  # Définition des différents jobs du workflow
     runs-on: self-hosted # Utilisation d'un runner personnalisé pour ce job. Ce runner est une machine virtuelle (VM) configurée avec Debian 12.
           
     steps:  # Liste des étapes à exécuter dans ce job
-      - name: Checkout code  # Etape pou la récupération du code source du dépôt
+      - name: Checkout code  # Étape pour la récupération du code source du dépôt
         uses: actions/checkout@v3  # Action réutilisable pour checker le code du dépôt GitHub
 
-      - name: Set up Node.js  # Etape pour la configuration de Node.js
+      - name: Set up Node.js  # Étape pour la configuration de Node.js
         uses: actions/setup-node@v3  # Action réutilisable pour configurer Node.js
         with:
-          node-version: '20'  # Spécifiant la version de Node.js à utiliser
+          node-version: '20'  # Spécification de la version de Node.js à utiliser
 
-      - name: Install dependencies  # Etape pour l'installation des dépendances du projet
+      - name: Install dependencies  # Étape pour l'installation des dépendances du projet
         run: npm install  # Exécution de la commande npm pour installer les dépendances
 
-      - name: Run tests  # Nom de l'étape : Exécution des tests
+      - name: Run tests  # Étape pour exécuter les tests
         run: npm test  # Lancement des tests unitaires définis dans le projet
 
   # Job de construction
@@ -39,24 +40,23 @@ jobs:  # Définition des différents jobs du workflow
 
     needs: test  # Ce job est dépendant du job de test, il ne s'exécute que si le job de test réussit
 
-    permissions: # Définit les permissions accordées au GITHUB_TOKEN pour les actions dans ce job.
-      contents: read # Ces permissions contrôlent ce que le GITHUB_TOKEN peut faire dans ce job spécifique,
-      packages: write # limitant ou autorisant des actions telles que la lecture du dépôt, la publication de packages,
-      attestations: write # et l'authentification avec des services externes.
+    permissions:  # Définit les permissions accordées au GITHUB_TOKEN pour les actions dans ce job.
+      contents: read
+      packages: write
+      attestations: write
       id-token: write
       
     steps:  # Liste des étapes à exécuter dans ce job
-      - name: Checkout code  # Etape pour la récupération du code source du dépôt
-        uses: actions/checkout@v3  # Action réutilisable pour checker le code du dépôt GitHub
+      - name: Checkout code  # Étape pour la récupération du code source du dépôt
+        uses: actions/checkout@v3
         
       - name: Log in to GitHub Container Registry  # Connexion au registre de conteneurs GitHub
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login  ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
-      # Utilisation du token GitHub pour se connecter au registre de conteneurs
-      
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+        
       - name: Build Docker image  # Construction de l'image Docker
         run: |
           docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }} .
-
+          
       - name: Push Docker image  # Pousser l'image Docker vers GitHub Container Registry
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}  
@@ -68,7 +68,7 @@ jobs:  # Définition des différents jobs du workflow
     needs: build  # Ce job attend que le job de build soit terminé avec succès
     
     steps:
-      - name: Setup SSH Key # Ce step configure la clé SSH pour la connexion sans mot de passe au serveur distant.
+      - name: Setup SSH Key  # Ce step configure la clé SSH pour la connexion sans mot de passe au serveur distant
         run: |
           mkdir -p ~/.ssh
           install -m 600 -D /dev/null ~/.ssh/id_rsa
@@ -76,7 +76,7 @@ jobs:  # Définition des différents jobs du workflow
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
         shell: bash
   
-      - name: Deploy to remote server
+      - name: Deploy to remote server  # Étape pour déployer sur le serveur distant
         run: |
           ssh -o StrictHostKeyChecking=no "$REMOTE_USER"@"$REMOTE_HOST" <<EOF
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
@@ -91,7 +91,8 @@ jobs:  # Définition des différents jobs du workflow
               -e DB_USER=${{ secrets.DB_USER }} \
               -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
               -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=${{ secrets.DB_PORT }} \ 
+              -e DB_PORT=${{ secrets.DB_PORT }} \
+              -p 5000:5000 \
               ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
             docker run -d --name postgres \
               -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
