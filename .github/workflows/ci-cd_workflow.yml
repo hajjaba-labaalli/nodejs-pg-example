@@ -55,7 +55,7 @@ jobs:  # Définition des différents jobs du workflow
             -Dsonar.host.url=https://sonarcloud.io \
             -Dsonar.login=$SONARCLOUD_TOKEN
         env:
-          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+          SONARCLOUD_TOKEN: ${{ secrets.SONAR_TOKEN }}
         
       # Analyse des vulnérabilités dans les dépendances
       #- name: Check for vulnerabilities in dependencies
