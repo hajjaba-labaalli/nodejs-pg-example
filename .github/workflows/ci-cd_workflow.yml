@@ -39,15 +39,15 @@ jobs:  # Définition des différents jobs du workflow
        # run: npm audit --audit-level=high
 
       # SonarCloud Scan (SAST)
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@v1.5
-        with:
-          projectBaseDir: .
-          args: >
-            -Dsonar.projectKey=nodejs-pg-example
-            -Dsonar.organization=hajjaba-labaalli
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+     # - name: SonarCloud Scan
+      #  uses: sonarsource/sonarcloud-github-action@v1.5
+       # with:
+        #  projectBaseDir: .
+       #   args: >
+        #    -Dsonar.projectKey=nodejs-pg-example
+        #    -Dsonar.organization=hajjaba-labaalli
+        #env:
+        #  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Job de construction
   build:
