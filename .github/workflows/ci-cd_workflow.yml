@@ -45,7 +45,7 @@ jobs:  # Définition des différents jobs du workflow
           projectBaseDir: .
           args: >
             -Dsonar.projectKey=nodejs-pg-example
-            -Dsonar.organization=LABAALLI MAHJOUBA
+            -Dsonar.organization=hajjaba-labaalli
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
