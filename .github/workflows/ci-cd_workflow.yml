@@ -41,6 +41,12 @@ jobs:  # Définition des différents jobs du workflow
         env:
           LOG_VERBOSE: true
 
+      - name: Set up JDK 17  # Étape pour la configuration de JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Analyze with SonarCloud  # Étape pour l'analyse avec SonarCloud
         run: |
           npx sonar-scanner \
