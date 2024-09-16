@@ -40,7 +40,17 @@ jobs:  # Définition des différents jobs du workflow
           GITHUB_TOKEN: ${{ github.token }}
         env:
           LOG_VERBOSE: true
-      
+
+      - name: Analyze with SonarCloud  # Étape pour l'analyse avec SonarCloud
+        run: |
+          npx sonar-scanner \
+            -Dsonar.projectKey=hajjaba-labaalli_nodejs-pg-example \
+            -Dsonar.organization=hajjaba-labaalli \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=$SONARCLOUD_TOKEN
+        env:
+          SONARCLOUD_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+        
       # Analyse des vulnérabilités dans les dépendances
       #- name: Check for vulnerabilities in dependencies
        # run: npm audit --audit-level=high
