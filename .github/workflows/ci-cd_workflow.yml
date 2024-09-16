@@ -33,6 +33,20 @@ jobs:  # Définition des différents jobs du workflow
 
       - name: Run tests  # Étape pour exécuter les tests
         run: npm test  # Lancement des tests unitaires définis dans le projet
+            # Analyse des vulnérabilités dans les dépendances
+      - name: Check for vulnerabilities in dependencies
+        run: npm audit --audit-level=high
+
+      # SonarCloud Scan (SAST)
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@v1.5
+        with:
+          projectBaseDir: .
+          args: >
+            -Dsonar.projectKey=mon_projet
+            -Dsonar.organization=mon_organisation
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   # Job de construction
   build:
@@ -60,6 +74,12 @@ jobs:  # Définition des différents jobs du workflow
       - name: Push Docker image  # Pousser l'image Docker vers GitHub Container Registry
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}  
+      
+      # Scan Docker image for vulnerabilities with Trivy
+      - name: Scan Docker image for vulnerabilities
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
           
   # Job de déploiement
   deploy:
