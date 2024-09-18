@@ -30,4 +30,4 @@ RUN npm ci --only=production
 EXPOSE 5000
 
 # Commande pour démarrer l'application Node.js
-CMD ["node", "index.js"]
+CMD ["node", "/app/index.js"]
