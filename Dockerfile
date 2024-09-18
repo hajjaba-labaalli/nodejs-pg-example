@@ -20,11 +20,11 @@ COPY ["package.json", "package-lock.json", "./"]
 RUN npm ci --only=production
 
 # Exécution des conteneurs en tant qu'utilisateur non privilégié (node) plutôt qu'en tant que root
-RUN useradd -ms /bin/bash node
-USER node
+#RUN useradd -ms /bin/bash node
+#USER node
 
 # Copier le reste des fichiers de l'application dans le conteneur
-COPY --chown=node:node . .
+#COPY --chown=node:node . .
 
 # Définir le port sur lequel le conteneur écoute
 EXPOSE 5000
