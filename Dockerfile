@@ -17,8 +17,8 @@ WORKDIR /app
 COPY ["package.json", "package-lock.json", "./"]
 
 # Installation des dépendances de la production seulement
-RUN npm ci --only=production
-
+#RUN npm ci --only=production
+RUN npm install
 # Exécution des conteneurs en tant qu'utilisateur non privilégié (node) plutôt qu'en tant que root
 #RUN useradd -ms /bin/bash node
 #USER node
@@ -30,4 +30,4 @@ RUN npm ci --only=production
 EXPOSE 5000
 
 # Commande pour démarrer l'application Node.js
-CMD ["node", "/app/index.js"]
+CMD ["node", "index.js"]
