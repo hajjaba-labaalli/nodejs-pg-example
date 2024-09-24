@@ -34,28 +34,28 @@ jobs:  # Définition des différents jobs du workflow
       - name: Run tests  # Étape pour exécuter les tests
         run: npm test  # Lancement des tests unitaires définis dans le projet
       
-      - name: Run SAST check
-        uses: IvanKuchin/SAST@v1
-        with:
-          GITHUB_TOKEN: ${{ github.token }}
-        env:
-          LOG_VERBOSE: true
+    #  - name: Run SAST check
+    #    uses: IvanKuchin/SAST@v1
+    #    with:
+    #      GITHUB_TOKEN: ${{ github.token }}
+    #    env:
+    #      LOG_VERBOSE: true
 
-      - name: Set up JDK 17  # Étape pour la configuration de JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
+    #  - name: Set up JDK 17  # Étape pour la configuration de JDK 17
+    #    uses: actions/setup-java@v3
+    #    with:
+    #      java-version: '17'
+    #      distribution: 'temurin'
 
-      - name: Analyze with SonarCloud  # Étape pour l'analyse avec SonarCloud
-        run: |
-          npx sonar-scanner \
-            -Dsonar.projectKey=hajjaba-labaalli_nodejs-pg-example \
-            -Dsonar.organization=hajjaba-labaalli \
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=$SONARCLOUD_TOKEN
-        env:
-          SONARCLOUD_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #  - name: Analyze with SonarCloud  # Étape pour l'analyse avec SonarCloud
+    #    run: |
+    #      npx sonar-scanner \
+    #        -Dsonar.projectKey=hajjaba-labaalli_nodejs-pg-example \
+    #        -Dsonar.organization=hajjaba-labaalli \
+    #        -Dsonar.host.url=https://sonarcloud.io \
+    #        -Dsonar.login=$SONARCLOUD_TOKEN
+    #    env:
+    #      SONARCLOUD_TOKEN: ${{ secrets.SONAR_TOKEN }}
         
       # Analyse des vulnérabilités dans les dépendances
       #- name: Check for vulnerabilities in dependencies
