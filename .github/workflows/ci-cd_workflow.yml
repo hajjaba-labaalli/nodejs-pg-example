@@ -107,7 +107,7 @@ jobs:  # Définition des différents jobs du workflow
           
   # Job de déploiement
   deploy:
-    runs-on: self-hosted # Utilisation d'un runner personnalisé pour ce job. Ce runner est une machine virtuelle (VM) configurée avec Debian 12.
+    runs-on: ubuntu-latest # Utilisation d'un runner personnalisé pour ce job. Ce runner est une machine virtuelle (VM) configurée avec Debian 12.
   
     needs: build  # Ce job attend que le job de build soit terminé avec succès
     
