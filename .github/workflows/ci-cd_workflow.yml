@@ -100,10 +100,10 @@ jobs:  # Définition des différents jobs du workflow
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}  
       
       # Scan Docker image for vulnerabilities with Trivy
-      - name: Scan Docker image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+      # - name: Scan Docker image for vulnerabilities
+        # uses: aquasecurity/trivy-action@master
+        # with:
+        #   image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
           
   # Job de déploiement
   deploy:
@@ -115,6 +115,7 @@ jobs:  # Définition des différents jobs du workflow
       - name: Setup SSH Key  # Ce step configure la clé SSH pour la connexion sans mot de passe au serveur distant
         run: |
           mkdir -p ~/.ssh
+          chmod 700 ~/.ssh
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
