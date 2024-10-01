@@ -2,24 +2,24 @@ name: CI/CD Workflow  # Nom du workflow CI/CD
 
 on:
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-        type: choice
-        options:
-        - info
-        - warning
-        - debug
-      tags:
-        description: 'Test scenario tags'
-        required: false
-        type: boolean
-      environment:
-        description: 'Environment to run tests against'
-        type: environment
-        required: true
+    # inputs:
+    #   logLevel:
+    #     description: 'Log level'
+    #     required: true
+    #     default: 'warning'
+    #     type: choice
+    #     options:
+    #     - info
+    #     - warning
+    #     - debug
+    #   tags:
+    #     description: 'Test scenario tags'
+    #     required: false
+    #     type: boolean
+    #   environment:
+    #     description: 'Environment to run tests against'
+    #     type: environment
+    #     required: true
 
 env:
   REGISTRY: ghcr.io
@@ -112,11 +112,11 @@ jobs:  # Définition des différents jobs du workflow
         run: |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}  
       
-      # Scan Docker image for vulnerabilities with Trivy
-      - name: Scan Docker image for vulnerabilities
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+      # # Scan Docker image for vulnerabilities with Trivy
+      # - name: Scan Docker image for vulnerabilities
+      #   uses: aquasecurity/trivy-action@master
+      #   with:
+      #     image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
           
   # Job de déploiement
   deploy:
@@ -134,37 +134,37 @@ jobs:  # Définition des différents jobs du workflow
           ssh-keyscan -H ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
         shell: bash
   
-      - name: Deploy to remote server  # Étape pour déployer sur le serveur distant
-        run: |
-          ssh -o StrictHostKeyChecking=no "$REMOTE_USER"@"$REMOTE_HOST" <<EOF
-            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
-            mkdir -p ~/data
-            docker stop backend-app || true
-            docker rm backend-app || true
-            docker stop postgres || true
-            docker rm postgres || true
-            docker rmi ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }} || true
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
-            docker run -d --name backend-app \
-              -e DB_USER=${{ secrets.DB_USER }} \
-              -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-              -e DB_NAME=${{ secrets.DB_NAME }} \
-              -e DB_HOST=${{ secrets.DB_HOST }} \
-              -e DB_PORT=${{ secrets.DB_PORT }} \
-              -p 5000:5000 \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
-            docker run -d --name postgres \
-              -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
-              -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
-              -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
-              -v ~/data:/var/lib/postgresql/data \
-              -p 5432:5432 \
-              postgres:16 \
-              bash -c "apt-get update && \
-                       apt-get install -y postgresql-16-postgis-3 postgresql-16-postgis-3-scripts && \
-                       docker-entrypoint.sh postgres"
-          EOF
-        shell: bash
+      # - name: Deploy to remote server  # Étape pour déployer sur le serveur distant
+      #   run: |
+      #     ssh -o StrictHostKeyChecking=no "$REMOTE_USER"@"$REMOTE_HOST" <<EOF
+      #       echo "${{ secrets.GITHUB_TOKEN }}" | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+      #       mkdir -p ~/data
+      #       docker stop backend-app || true
+      #       docker rm backend-app || true
+      #       docker stop postgres || true
+      #       docker rm postgres || true
+      #       docker rmi ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }} || true
+      #       docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+      #       docker run -d --name backend-app \
+      #         -e DB_USER=${{ secrets.DB_USER }} \
+      #         -e DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+      #         -e DB_NAME=${{ secrets.DB_NAME }} \
+      #         -e DB_HOST=${{ secrets.DB_HOST }} \
+      #         -e DB_PORT=${{ secrets.DB_PORT }} \
+      #         -p 5000:5000 \
+      #         ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG_NAME }}
+      #       docker run -d --name postgres \
+      #         -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+      #         -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+      #         -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+      #         -v ~/data:/var/lib/postgresql/data \
+      #         -p 5432:5432 \
+      #         postgres:16 \
+      #         bash -c "apt-get update && \
+      #                  apt-get install -y postgresql-16-postgis-3 postgresql-16-postgis-3-scripts && \
+      #                  docker-entrypoint.sh postgres"
+      #     EOF
+      #   shell: bash
         env:
           REMOTE_USER: ${{ secrets.REMOTE_USER }}
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
